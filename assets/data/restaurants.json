@@ -1,0 +1,55 @@
+{
+    "restaurants": [
+        {
+            "id": "rest1",
+            "name": "Pizza Tower",
+            "zone": "Urban",
+            "rating": 4.6,
+            "cuisine": "Italian",
+            "menu": [
+                {
+                    "id": "m101",
+                    "name": "Pepperoni Pizza",
+                    "description": "Classic pepperoni pizza with mozzarella cheese",
+                    "price": 499
+                },
+                {
+                    "id": "m102",
+                    "name": "Garlic Bread",
+                    "description": "Cheesy garlic breadsticks",
+                    "price": 199
+                }
+            ]
+        },
+        {
+            "id": "rest2",
+            "name": "Bite Factory",
+            "zone": "Remote",
+            "rating": 3.9,
+            "cuisine": "Fast Food",
+            "menu": [
+                {
+                    "id": "m241",
+                    "name": "Smash Burger",
+                    "description": "Double patty smash burger with special sauce",
+                    "price": 299
+                }
+            ]
+        },
+        {
+            "id": "rest3",
+            "name": "Sushi Palace",
+            "zone": "Suburban",
+            "rating": 4.8,
+            "cuisine": "Japanese",
+            "menu": [
+                {
+                    "id": "m301",
+                    "name": "Salmon Sushi",
+                    "description": "Fresh salmon sushi roll",
+                    "price": 399
+                }
+            ]
+        }
+    ]
+}
