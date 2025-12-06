@@ -42,11 +42,14 @@ class CartScreen extends StatelessWidget {
                   style: TextStyle(color: Colors.grey),
                 ),
                 const SizedBox(height: 24),
-                CustomButton(
-                  text: 'Browse Restaurants',
-                  onPressed: () {
-                    Get.until((route) => route.isFirst);
-                  },
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: CustomButton(
+                    text: 'Browse Restaurants',
+                    onPressed: () {
+                      Get.until((route) => route.isFirst);
+                    },
+                  ),
                 ),
               ],
             ),

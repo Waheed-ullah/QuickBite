@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:quickbite/modules/restaurants/controllers/restaurant_controller.dart';
 import 'package:quickbite/modules/cart/controllers/cart_controller.dart';
+import 'package:quickbite/modules/restaurants/controllers/restaurant_controller.dart';
 import 'package:quickbite/modules/restaurants/widgets/menu_item_card.dart';
 import 'package:quickbite/res/app_colors.dart';
 
@@ -166,7 +166,7 @@ class RestaurantDetailScreen extends StatelessWidget {
                     ),
                   )
                 : ListView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    padding: EdgeInsets.symmetric(horizontal: 16),
                     itemCount: restaurant.menu.length,
                     itemBuilder: (context, index) {
                       final menuItem = restaurant.menu[index];

@@ -1,56 +1,100 @@
 import 'package:get/get.dart';
 import 'package:quickbite/data/models/cart_item_model.dart';
 import 'package:quickbite/data/models/menu_item_model.dart';
-import 'package:quickbite/data/models/order_model.dart';
 import 'package:quickbite/data/models/restaurant_model.dart';
-import 'package:quickbite/data/repository/cart_repository.dart';
-import 'package:quickbite/data/repository/order_repository.dart';
+import 'package:quickbite/data/repository/local_storage.dart';
 import 'package:quickbite/data/services/delivery_service.dart';
 
 class CartController extends GetxController {
-  final CartRepository _cartRepository = Get.find();
-  final OrderRepository _orderRepository = Get.find();
-
   RxList<CartItem> cartItems = <CartItem>[].obs;
   RxString promoCode = ''.obs;
   RxDouble promoDiscount = 0.0.obs;
   RxBool isFirstOrder = true.obs;
+  late LocalStorage _localStorage;
 
   @override
   void onInit() {
     super.onInit();
-    loadCartFromCache();
+    _localStorage = Get.find<LocalStorage>();
+    loadCartFromStorage();
     checkFirstOrder();
   }
 
-  Future<void> loadCartFromCache() async {
+  void checkFirstOrder() {
     try {
-      final cachedCart = await _cartRepository.loadCart();
-      cartItems.assignAll(cachedCart);
+      final orders = _localStorage.getOrders();
+      isFirstOrder.value = orders.isEmpty;
     } catch (e) {
-      print('Error loading cart from cache: $e');
+      print('Error checking first order: $e');
+      isFirstOrder.value = true;
     }
   }
 
-  void checkFirstOrder() async {
-    final hasOrders = _orderRepository.hasOrders();
-    isFirstOrder.value = !hasOrders;
+  Future<void> loadCartFromStorage() async {
+    try {
+      final cartData = _localStorage.getCartItems();
+      final items = cartData.map((data) => _cartItemFromMap(data)).toList();
+      cartItems.assignAll(items);
+    } catch (e) {
+      print('Error loading cart: $e');
+    }
+  }
+
+  CartItem _cartItemFromMap(Map<String, dynamic> data) {
+    return CartItem(
+      menuItem: MenuItem.fromJson(data['menuItem']),
+      restaurant: Restaurant.fromJson(data['restaurant']),
+      quantity: data['quantity'] ?? 1,
+    );
+  }
+
+  Map<String, dynamic> _cartItemToMap(CartItem item) {
+    return {
+      'menuItem': item.menuItem.toJson(),
+      'restaurant': item.restaurant.toJson(),
+      'quantity': item.quantity,
+      'restaurantId': item.restaurant.id,
+      'menuItemId': item.menuItem.id,
+    };
   }
 
   void addToCart(MenuItem menuItem, Restaurant restaurant) {
-    final existingItemIndex = cartItems.indexWhere(
+    final existingIndex = cartItems.indexWhere(
       (item) =>
           item.menuItem.id == menuItem.id &&
           item.restaurant.id == restaurant.id,
     );
 
-    if (existingItemIndex != -1) {
-      cartItems[existingItemIndex].quantity++;
+    if (existingIndex != -1) {
+      // Update quantity
+      cartItems[existingIndex].quantity++;
+      cartItems.refresh();
+
+      // Save to storage
+      _localStorage.updateCartQuantity(
+        restaurant.id,
+        menuItem.id,
+        cartItems[existingIndex].quantity,
+      );
     } else {
-      cartItems.add(CartItem(menuItem: menuItem, restaurant: restaurant));
+      // Add new item
+      final newItem = CartItem(
+        menuItem: menuItem,
+        restaurant: restaurant,
+        quantity: 1,
+      );
+      cartItems.add(newItem);
+
+      // Save to storage
+      _localStorage.saveCartItem(_cartItemToMap(newItem));
     }
-    cartItems.refresh();
-    saveCartToCache();
+
+    Get.snackbar(
+      'Added to Cart',
+      '${menuItem.name} added to cart',
+      snackPosition: SnackPosition.BOTTOM,
+      duration: const Duration(seconds: 2),
+    );
   }
 
   void removeFromCart(String menuItemId, String restaurantId) {
@@ -58,7 +102,9 @@ class CartController extends GetxController {
       (item) =>
           item.menuItem.id == menuItemId && item.restaurant.id == restaurantId,
     );
-    saveCartToCache();
+
+    // Remove from storage
+    _localStorage.removeCartItem(restaurantId, menuItemId);
   }
 
   void updateQuantity(String menuItemId, String restaurantId, int newQuantity) {
@@ -70,12 +116,14 @@ class CartController extends GetxController {
     if (item != null) {
       if (newQuantity > 0) {
         item.quantity = newQuantity;
+        cartItems.refresh();
+
+        // Update storage
+        _localStorage.updateCartQuantity(restaurantId, menuItemId, newQuantity);
       } else {
         removeFromCart(menuItemId, restaurantId);
       }
     }
-    cartItems.refresh();
-    saveCartToCache();
   }
 
   double get subtotal {
@@ -100,9 +148,8 @@ class CartController extends GetxController {
       return;
     }
 
-    // Local promo code validation
     const promoCodes = {
-      'SAVE50': {'discount': 50, 'minOrder': 700},
+      'SAVE50': {'discount': 50, 'minOrder': 700, 'firstOrderOnly': false},
       'FIRST100': {'discount': 100, 'minOrder': 0, 'firstOrderOnly': true},
     };
 
@@ -134,11 +181,12 @@ class CartController extends GetxController {
     }
   }
 
-  Future<void> saveCartToCache() async {
+  Future<void> saveCartToStorage() async {
     try {
-      await _cartRepository.saveCart(cartItems);
+      final cartData = cartItems.map(_cartItemToMap).toList();
+      await _localStorage.cacheCart(cartData);
     } catch (e) {
-      print('Error saving cart to cache: $e');
+      print('Error saving cart: $e');
     }
   }
 
@@ -153,26 +201,30 @@ class CartController extends GetxController {
         throw Exception('Cart is empty');
       }
 
-      // Create order
-      final orderId = _orderRepository.generateOrderId();
-      final order = Order(
-        id: orderId,
-        items: List.from(cartItems),
-        customerName: customerName,
-        phoneNumber: phoneNumber,
-        deliveryAddress: deliveryAddress,
-        deliveryInstructions: deliveryInstructions,
-        subtotal: subtotal,
-        deliveryFee: deliveryFee,
-        discount: promoDiscount.value,
-        totalAmount: grandTotal,
-        orderDate: DateTime.now(),
-        status: 'Confirmed',
-        promoCode: promoCode.value.isNotEmpty ? promoCode.value : null,
-      );
+      final orderId = 'ORD${DateTime.now().millisecondsSinceEpoch}';
+      final order = {
+        'id': orderId,
+        'customerName': customerName,
+        'phoneNumber': phoneNumber,
+        'deliveryAddress': deliveryAddress,
+        'deliveryInstructions': deliveryInstructions,
+        'items': cartItems.map((item) => _cartItemToMap(item)).toList(),
+        'subtotal': subtotal,
+        'deliveryFee': deliveryFee,
+        'discount': promoDiscount.value,
+        'totalAmount': grandTotal,
+        'orderDate': DateTime.now().toIso8601String(),
+        'status': 'Confirmed',
+        'promoCode': promoCode.value.isNotEmpty ? promoCode.value : null,
+      };
 
-      // Save order
-      await _orderRepository.saveOrder(order);
+      // Get existing orders
+      final existingOrders = _localStorage.getCachedOrders();
+      final updatedOrders = List<Map<String, dynamic>>.from(existingOrders)
+        ..insert(0, order);
+
+      // Save updated orders
+      await _localStorage.cacheOrders(updatedOrders);
 
       // Clear cart
       clearCart();
@@ -187,6 +239,6 @@ class CartController extends GetxController {
     cartItems.clear();
     promoCode.value = '';
     promoDiscount.value = 0.0;
-    saveCartToCache();
+    _localStorage.clearCart();
   }
 }

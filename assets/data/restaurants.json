@@ -18,6 +18,12 @@
                     "name": "Garlic Bread",
                     "description": "Cheesy garlic breadsticks",
                     "price": 199
+                },
+                {
+                    "id": "m103",
+                    "name": "Margherita Pizza",
+                    "description": "Simple tomato and cheese pizza",
+                    "price": 399
                 }
             ]
         },
@@ -33,6 +39,12 @@
                     "name": "Smash Burger",
                     "description": "Double patty smash burger with special sauce",
                     "price": 299
+                },
+                {
+                    "id": "m242",
+                    "name": "French Fries",
+                    "description": "Crispy golden fries",
+                    "price": 99
                 }
             ]
         },
@@ -48,6 +60,33 @@
                     "name": "Salmon Sushi",
                     "description": "Fresh salmon sushi roll",
                     "price": 399
+                },
+                {
+                    "id": "m302",
+                    "name": "Tuna Roll",
+                    "description": "Tuna roll with avocado",
+                    "price": 349
+                }
+            ]
+        },
+        {
+            "id": "rest4",
+            "name": "Curry House",
+            "zone": "Urban",
+            "rating": 4.2,
+            "cuisine": "Indian",
+            "menu": [
+                {
+                    "id": "m401",
+                    "name": "Butter Chicken",
+                    "description": "Creamy tomato curry with chicken",
+                    "price": 299
+                },
+                {
+                    "id": "m402",
+                    "name": "Garlic Naan",
+                    "description": "Soft bread with garlic butter",
+                    "price": 79
                 }
             ]
         }
