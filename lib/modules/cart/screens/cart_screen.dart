@@ -58,7 +58,6 @@ class CartScreen extends StatelessWidget {
 
         return Column(
           children: [
-            // Cart items list
             Expanded(
               child: ListView.builder(
                 padding: const EdgeInsets.all(16),
@@ -92,7 +91,6 @@ class CartScreen extends StatelessWidget {
               ),
             ),
 
-            // Order summary
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -113,7 +111,6 @@ class CartScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // Promo code section
                   Row(
                     children: [
                       Expanded(
@@ -158,7 +155,6 @@ class CartScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
 
-                  // Price breakdown
                   _buildPriceRow('Subtotal', controller.subtotal),
                   const SizedBox(height: 8),
                   _buildPriceRow(
@@ -187,7 +183,6 @@ class CartScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
 
-                  // Checkout button
                   CustomButton(
                     text: 'Proceed to Checkout',
                     onPressed: () {

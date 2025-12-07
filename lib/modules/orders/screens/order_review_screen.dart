@@ -22,7 +22,6 @@ class OrderReviewScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Success icon
             Center(
               child: Container(
                 width: 100,
@@ -40,7 +39,6 @@ class OrderReviewScreen extends StatelessWidget {
             ),
             const SizedBox(height: 24),
 
-            // Order confirmed text
             const Center(
               child: Text(
                 'Order Confirmed!',
@@ -61,7 +59,6 @@ class OrderReviewScreen extends StatelessWidget {
 
             const SizedBox(height: 32),
 
-            // Order details card
             Card(
               elevation: 3,
               child: Padding(
@@ -78,7 +75,6 @@ class OrderReviewScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 16),
 
-                    // Delivery details
                     _buildDetailRow(
                       'Name',
                       deliveryDetails['name'] ?? 'Not provided',
@@ -101,7 +97,6 @@ class OrderReviewScreen extends StatelessWidget {
 
                     const Divider(height: 32),
 
-                    // Order summary
                     const Text(
                       'Order Summary',
                       style: TextStyle(
@@ -147,7 +142,6 @@ class OrderReviewScreen extends StatelessWidget {
 
             const SizedBox(height: 16),
 
-            // Order items list
             Obx(() {
               return Card(
                 elevation: 3,
@@ -208,7 +202,6 @@ class OrderReviewScreen extends StatelessWidget {
 
             const SizedBox(height: 32),
 
-            // Estimated delivery time
             Card(
               color: AppColors.primaryLight,
               elevation: 0,
@@ -260,14 +253,12 @@ class OrderReviewScreen extends StatelessWidget {
 
             const SizedBox(height: 24),
 
-            // Action buttons
             Row(
               children: [
                 Expanded(
                   child: CustomButton(
                     text: 'Track Order',
                     onPressed: () {
-                      // In prototype, just show a message
                       Get.snackbar(
                         'Order Tracking',
                         'Order tracking would be implemented in production',
@@ -282,7 +273,6 @@ class OrderReviewScreen extends StatelessWidget {
                   child: CustomButton(
                     text: 'Back to Home',
                     onPressed: () {
-                      // Clear cart and go to restaurants list
                       cartController.clearCart();
                       Get.until((route) => route.isFirst);
                     },

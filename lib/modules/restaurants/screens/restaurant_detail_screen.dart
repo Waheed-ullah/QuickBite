@@ -37,9 +37,7 @@ class RestaurantDetailScreen extends StatelessWidget {
           overflow: TextOverflow.ellipsis,
         ),
         actions: [
-          // Favorite button - Now properly wrapped with Obx
           Obx(() {
-            // Get fresh restaurant data to ensure reactive updates
             final updatedRestaurant = restaurantController.getRestaurantById(
               restaurantId,
             );
@@ -55,7 +53,6 @@ class RestaurantDetailScreen extends StatelessWidget {
               },
             );
           }),
-          // Cart button
           Stack(
             children: [
               IconButton(
@@ -64,7 +61,6 @@ class RestaurantDetailScreen extends StatelessWidget {
                   Get.toNamed('/cart');
                 },
               ),
-              // Cart item count badge
               Obx(() {
                 final cartItemsCount = cartController.cartItems.length;
                 if (cartItemsCount == 0) return const SizedBox();
@@ -101,7 +97,6 @@ class RestaurantDetailScreen extends StatelessWidget {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Restaurant header
           Container(
             padding: const EdgeInsets.all(16),
             color: AppColors.primaryLight,
@@ -145,7 +140,6 @@ class RestaurantDetailScreen extends StatelessWidget {
             ),
           ),
 
-          // Menu section
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Text(
@@ -156,7 +150,6 @@ class RestaurantDetailScreen extends StatelessWidget {
             ),
           ),
 
-          // Menu items list
           Expanded(
             child: restaurant.menu.isEmpty
                 ? const Center(
@@ -174,7 +167,6 @@ class RestaurantDetailScreen extends StatelessWidget {
                         menuItem: menuItem,
                         onAddToCart: () {
                           cartController.addToCart(menuItem, restaurant);
-                          // Show success animation
                           Get.snackbar(
                             'Added to Cart',
                             '${menuItem.name} added to cart',

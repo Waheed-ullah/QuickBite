@@ -28,7 +28,6 @@ class RestaurantCard extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Restaurant image placeholder
               Container(
                 width: 80,
                 height: 80,
@@ -44,7 +43,6 @@ class RestaurantCard extends StatelessWidget {
               ),
               const SizedBox(width: 12),
 
-              // Restaurant details
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

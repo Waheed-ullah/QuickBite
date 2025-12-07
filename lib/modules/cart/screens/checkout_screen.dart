@@ -29,7 +29,6 @@ class CheckoutScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Delivery details section
             const Text(
               'Delivery Details',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -93,7 +92,6 @@ class CheckoutScreen extends StatelessWidget {
 
             const SizedBox(height: 24),
 
-            // Order summary
             const Text(
               'Order Summary',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -138,7 +136,6 @@ class CheckoutScreen extends StatelessWidget {
 
             const SizedBox(height: 24),
 
-            // Payment method (simplified for prototype)
             const Text(
               'Payment Method',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -171,12 +168,10 @@ class CheckoutScreen extends StatelessWidget {
 
             const SizedBox(height: 32),
 
-            // Place order button
             CustomButton(
               text: 'Place Order',
               onPressed: () {
                 if (_validateForm()) {
-                  // Navigate to order review screen
                   Get.toNamed(
                     '/order-review',
                     arguments: {

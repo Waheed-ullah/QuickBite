@@ -8,7 +8,6 @@ class DeliveryService {
   static double calculateDeliveryFee(List<String> zones) {
     if (zones.isEmpty) return 0;
 
-    // Get the highest fee among all zones in cart
     double maxFee = 0;
     for (var zone in zones) {
       final fee = zoneFees[zone] ?? 0;

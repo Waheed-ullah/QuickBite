@@ -46,7 +46,6 @@ class _RestaurantsListScreenState extends State<RestaurantsListScreen> {
       ),
       body: Column(
         children: [
-          // Search Bar
           Padding(
             padding: const EdgeInsets.all(12),
             child: TextField(
@@ -72,7 +71,6 @@ class _RestaurantsListScreenState extends State<RestaurantsListScreen> {
             ),
           ),
 
-          // Filter Chips Row
           SizedBox(
             height: 50,
             child: Obx(() {
@@ -80,7 +78,6 @@ class _RestaurantsListScreenState extends State<RestaurantsListScreen> {
                 scrollDirection: Axis.horizontal,
                 padding: const EdgeInsets.symmetric(horizontal: 12),
                 children: [
-                  // Sort dropdown
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8),
                     decoration: BoxDecoration(
@@ -111,7 +108,6 @@ class _RestaurantsListScreenState extends State<RestaurantsListScreen> {
                   ),
                   const SizedBox(width: 8),
 
-                  // Favorites filter
                   FilterChip(
                     label: const Text('Favorites'),
                     selected: controller.showFavoritesOnly.value,
@@ -122,7 +118,6 @@ class _RestaurantsListScreenState extends State<RestaurantsListScreen> {
                   ),
                   const SizedBox(width: 8),
 
-                  // Cuisine filters
                   ...controller.getAvailableCuisines().map((cuisine) {
                     return Padding(
                       padding: const EdgeInsets.only(right: 8),
@@ -135,7 +130,6 @@ class _RestaurantsListScreenState extends State<RestaurantsListScreen> {
                     );
                   }).toList(),
 
-                  // Clear filters button
                   if (controller.selectedCuisines.isNotEmpty ||
                       controller.searchQuery.isNotEmpty ||
                       controller.showFavoritesOnly.value)
@@ -153,7 +147,6 @@ class _RestaurantsListScreenState extends State<RestaurantsListScreen> {
             }),
           ),
 
-          // Restaurants List
           Expanded(
             child: Obx(() {
               if (controller.isLoading.value) {

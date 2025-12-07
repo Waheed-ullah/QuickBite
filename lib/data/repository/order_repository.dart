@@ -7,12 +7,10 @@ class OrderRepository extends GetxService {
 
   Future<void> saveOrder(Order order) async {
     try {
-      // Get existing orders
       final existingOrders = _localStorage.getCachedOrders();
       final updatedOrders = List<Map<String, dynamic>>.from(existingOrders)
         ..insert(0, order.toJson());
 
-      // Save to storage
       await _localStorage.cacheOrders(updatedOrders);
     } catch (e) {
       throw Exception('Failed to save order: $e');
@@ -42,7 +40,6 @@ class OrderRepository extends GetxService {
     return orders.isNotEmpty;
   }
 
-  // For demo purposes - generate a unique order ID
   String generateOrderId() {
     final now = DateTime.now();
     return 'ORD${now.millisecondsSinceEpoch}';

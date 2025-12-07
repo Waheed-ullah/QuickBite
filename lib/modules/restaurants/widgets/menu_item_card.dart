@@ -29,7 +29,6 @@ class _MenuItemCardState extends State<MenuItemCard> {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Food image placeholder
             Container(
               width: 60,
               height: 60,
@@ -41,7 +40,6 @@ class _MenuItemCardState extends State<MenuItemCard> {
             ),
             const SizedBox(width: 12),
 
-            // Menu item details
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -90,7 +88,6 @@ class _MenuItemCardState extends State<MenuItemCard> {
 
                                   widget.onAddToCart();
 
-                                  // Reset button state after animation
                                   Future.delayed(
                                     const Duration(milliseconds: 500),
                                     () {

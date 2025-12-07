@@ -11,7 +11,6 @@ class RestaurantController extends GetxController {
   RxBool isLoading = true.obs;
   RxString error = ''.obs;
 
-  // Search & Filter Properties
   RxString searchQuery = ''.obs;
   RxString sortBy = 'rating'.obs;
   RxList<String> selectedCuisines = <String>[].obs;
@@ -36,11 +35,8 @@ class RestaurantController extends GetxController {
   Future<void> loadPreferences() async {
     sortBy.value = _localStorage.getPreference('sort_by', 'rating');
 
-    // Load saved promo code if any
     final savedPromoCode = _localStorage.getPromoCode();
-    if (savedPromoCode != null && savedPromoCode.isNotEmpty) {
-      // You might want to pass this to CartController
-    }
+    if (savedPromoCode != null && savedPromoCode.isNotEmpty) {}
   }
 
   Future<void> loadRestaurants() async {
@@ -48,13 +44,10 @@ class RestaurantController extends GetxController {
       isLoading(true);
       error('');
 
-      // Check cache first
       if (_localStorage.hasRestaurantsCache()) {
-        // Load from cache if available
         final cachedData = _localStorage.getCachedRestaurants();
         if (cachedData != null) {
           try {
-            // Parse cached JSON data
             final parsedData = await _parseRestaurantsFromJson(cachedData);
             if (parsedData.isNotEmpty) {
               restaurants.assignAll(parsedData);
@@ -69,17 +62,13 @@ class RestaurantController extends GetxController {
         }
       }
 
-      // Load fresh data
       final freshData = await _repository.getRestaurants();
       restaurants.assignAll(freshData);
 
-      // Cache the data for offline use
       await _cacheRestaurantsData(freshData);
 
-      // Load favorites from storage
       await _loadFavorites();
 
-      // Apply initial filter
       applyFilters();
     } catch (e) {
       error(e.toString());
@@ -122,7 +111,6 @@ class RestaurantController extends GetxController {
   Future<void> _loadFavorites() async {
     final favoriteIds = _localStorage.getFavoriteRestaurants();
 
-    // Update restaurant favorite status
     for (var i = 0; i < restaurants.length; i++) {
       final restaurant = restaurants[i];
       if (favoriteIds.contains(restaurant.id)) {
@@ -140,10 +128,8 @@ class RestaurantController extends GetxController {
       restaurants[index] = restaurants[index].copyWith(isFavorite: isFavorite);
       restaurants.refresh();
 
-      // Save to storage
       _localStorage.toggleFavorite(restaurantId);
 
-      // Update filtered list
       applyFilters();
     }
   }
@@ -151,8 +137,6 @@ class RestaurantController extends GetxController {
   Restaurant? getRestaurantById(String id) {
     return restaurants.firstWhereOrNull((r) => r.id == id);
   }
-
-  // ========== SEARCH & FILTER METHODS ==========
 
   void setSearchQuery(String query) {
     searchQuery.value = query.trim();
@@ -199,7 +183,6 @@ class RestaurantController extends GetxController {
 
     List<Restaurant> filtered = List.from(restaurants);
 
-    // 1. Apply search filter
     if (searchQuery.isNotEmpty) {
       final query = searchQuery.value.toLowerCase();
       filtered = filtered.where((restaurant) {
@@ -209,25 +192,22 @@ class RestaurantController extends GetxController {
       }).toList();
     }
 
-    // 2. Apply cuisine filter
     if (selectedCuisines.isNotEmpty) {
       filtered = filtered.where((restaurant) {
         return selectedCuisines.contains(restaurant.cuisine);
       }).toList();
     }
 
-    // 3. Apply favorites filter
     if (showFavoritesOnly.value) {
       filtered = filtered.where((restaurant) => restaurant.isFavorite).toList();
     }
 
-    // 4. Apply sorting
     filtered.sort((a, b) {
       switch (sortBy.value) {
         case 'name':
           return a.name.toLowerCase().compareTo(b.name.toLowerCase());
         case 'rating':
-          return b.rating.compareTo(a.rating); // Descending
+          return b.rating.compareTo(a.rating);
         case 'deliveryFee':
           return _getDeliveryFee(a.zone).compareTo(_getDeliveryFee(b.zone));
         default:
@@ -267,12 +247,10 @@ class RestaurantController extends GetxController {
     return zones;
   }
 
-  // Get restaurants by cuisine
   List<Restaurant> getRestaurantsByCuisine(String cuisine) {
     return restaurants.where((r) => r.cuisine == cuisine).toList();
   }
 
-  // Get top rated restaurants
   List getTopRatedRestaurants({int limit = 5}) {
     final sorted = List.from(restaurants)
       ..sort((a, b) => b.rating.compareTo(a.rating));
@@ -280,14 +258,12 @@ class RestaurantController extends GetxController {
     return sorted.take(limit).toList();
   }
 
-  // Check if any filters are active
   bool get areFiltersActive {
     return searchQuery.isNotEmpty ||
         selectedCuisines.isNotEmpty ||
         showFavoritesOnly.value;
   }
 
-  // Get active filter count
   int get activeFilterCount {
     int count = 0;
     if (searchQuery.isNotEmpty) count++;
@@ -296,21 +272,16 @@ class RestaurantController extends GetxController {
     return count;
   }
 
-  // Refresh data
   Future<void> refreshData() async {
     await loadRestaurants();
   }
 
-  // Add to search history
   void addToSearchHistory(String query) {
     if (query.trim().isEmpty) return;
 
     final history = _localStorage.getSearchHistory();
-    // Remove if already exists
     history.remove(query);
-    // Add to beginning
     history.insert(0, query);
-    // Keep only last 10 searches
     if (history.length > 10) {
       history.removeLast();
     }
@@ -318,23 +289,19 @@ class RestaurantController extends GetxController {
     _localStorage.saveSearchHistory(history);
   }
 
-  // Get search history
   List<String> getSearchHistory() {
     return _localStorage.getSearchHistory();
   }
 
-  // Clear search history
   void clearSearchHistory() {
     _localStorage.saveSearchHistory([]);
   }
 
-  // Get delivery fee for restaurant
   String getDeliveryFeeText(Restaurant restaurant) {
     final fee = _getDeliveryFee(restaurant.zone);
     return '₹${fee.toInt()}';
   }
 
-  // Get delivery time estimate
   String getDeliveryTimeEstimate(Restaurant restaurant) {
     switch (restaurant.zone) {
       case 'Urban':
@@ -348,12 +315,10 @@ class RestaurantController extends GetxController {
     }
   }
 
-  // Check if restaurant is open (simplified - always true for prototype)
   bool isRestaurantOpen(Restaurant restaurant) {
-    return true; // In real app, check opening hours
+    return true;
   }
 
-  // Get restaurant stats
   Map<String, dynamic> getRestaurantStats() {
     if (restaurants.isEmpty) {
       return {'total': 0, 'avgRating': 0.0, 'cuisineCount': 0, 'zoneCount': 0};
@@ -373,17 +338,14 @@ class RestaurantController extends GetxController {
     };
   }
 
-  // Get filtered restaurant count
   int get filteredCount => filteredRestaurants.length;
 
-  // Check if no results after filtering
   bool get noResultsAfterFilter {
     return !isLoading.value &&
         filteredRestaurants.isEmpty &&
         restaurants.isNotEmpty;
   }
 
-  // Get message for empty state
   String get emptyStateMessage {
     if (isLoading.value) return 'Loading...';
     if (restaurants.isEmpty) return 'No restaurants available';
@@ -393,7 +355,6 @@ class RestaurantController extends GetxController {
     return 'No restaurants found';
   }
 
-  // Get icon for empty state
   String get emptyStateIcon {
     if (restaurants.isEmpty) return '😞';
     if (filteredRestaurants.isEmpty && areFiltersActive) {
