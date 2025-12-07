@@ -66,18 +66,15 @@ class CartController extends GetxController {
     );
 
     if (existingIndex != -1) {
-      // Update quantity
       cartItems[existingIndex].quantity++;
       cartItems.refresh();
 
-      // Save to storage
       _localStorage.updateCartQuantity(
         restaurant.id,
         menuItem.id,
         cartItems[existingIndex].quantity,
       );
     } else {
-      // Add new item
       final newItem = CartItem(
         menuItem: menuItem,
         restaurant: restaurant,
@@ -85,7 +82,6 @@ class CartController extends GetxController {
       );
       cartItems.add(newItem);
 
-      // Save to storage
       _localStorage.saveCartItem(_cartItemToMap(newItem));
     }
 
@@ -102,8 +98,6 @@ class CartController extends GetxController {
       (item) =>
           item.menuItem.id == menuItemId && item.restaurant.id == restaurantId,
     );
-
-    // Remove from storage
     _localStorage.removeCartItem(restaurantId, menuItemId);
   }
 
@@ -118,7 +112,6 @@ class CartController extends GetxController {
         item.quantity = newQuantity;
         cartItems.refresh();
 
-        // Update storage
         _localStorage.updateCartQuantity(restaurantId, menuItemId, newQuantity);
       } else {
         removeFromCart(menuItemId, restaurantId);
@@ -156,21 +149,18 @@ class CartController extends GetxController {
     if (promoCodes.containsKey(code.toUpperCase())) {
       final promo = promoCodes[code.toUpperCase()]!;
 
-      // Check if promo is for first order only
       if (promo['firstOrderOnly'] == true && !isFirstOrder.value) {
         Get.snackbar('Error', 'This promo is for first orders only');
         return;
       }
 
-      // Check minimum order amount
       final discount = promo['discount'];
       final minOrder = promo['minOrder'] ?? 0;
 
-      // Validate numeric types
       if (discount is num && minOrder is num) {
         if (subtotal >= minOrder) {
           promoCode.value = code.toUpperCase();
-          promoDiscount.value = discount.toDouble(); // Safe now
+          promoDiscount.value = discount.toDouble();
           Get.snackbar('Success', 'Promo code applied!');
         } else {
           Get.snackbar('Error', 'Minimum order amount not met');
@@ -218,15 +208,12 @@ class CartController extends GetxController {
         'promoCode': promoCode.value.isNotEmpty ? promoCode.value : null,
       };
 
-      // Get existing orders
       final existingOrders = _localStorage.getCachedOrders();
       final updatedOrders = List<Map<String, dynamic>>.from(existingOrders)
         ..insert(0, order);
 
-      // Save updated orders
       await _localStorage.cacheOrders(updatedOrders);
 
-      // Clear cart
       clearCart();
 
       return orderId;

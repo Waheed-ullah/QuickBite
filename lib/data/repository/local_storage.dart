@@ -13,7 +13,6 @@ class LocalStorage extends GetxService {
     return this;
   }
 
-  // ========== CART METHODS ==========
   Future<void> saveCart(List<Map<String, dynamic>> cartItems) async {
     await _cartBox.put('cart_items', cartItems);
   }
@@ -28,7 +27,6 @@ class LocalStorage extends GetxService {
   }
 
   List<Map<String, dynamic>> getCartItems() {
-    // Get individual cart items
     final individualItems = _cartBox.values
         .where((value) => value is Map<String, dynamic>)
         .where(
@@ -37,7 +35,6 @@ class LocalStorage extends GetxService {
         .map((item) => item as Map<String, dynamic>)
         .toList();
 
-    // Get bulk cart items
     final bulkItems = _cartBox.get('cart_items', defaultValue: []);
 
     return [...individualItems, ...bulkItems];
@@ -65,7 +62,6 @@ class LocalStorage extends GetxService {
     await _cartBox.clear();
   }
 
-  // ========== FAVORITE METHODS ==========
   Future<void> toggleFavorite(String restaurantId) async {
     final isFavorite = _favoritesBox.get(restaurantId, defaultValue: false);
     await _favoritesBox.put(restaurantId, !isFavorite);
@@ -82,7 +78,6 @@ class LocalStorage extends GetxService {
         .toList();
   }
 
-  // ========== ORDERS METHODS ==========
   Future<void> saveOrders(List<Map<String, dynamic>> orders) async {
     await _appBox.put('orders', orders);
   }
@@ -91,7 +86,6 @@ class LocalStorage extends GetxService {
     return _appBox.get('orders', defaultValue: []);
   }
 
-  // ========== APP SETTINGS & PREFERENCES ==========
   Future<void> savePreference(String key, dynamic value) async {
     await _appBox.put(key, value);
   }
@@ -136,7 +130,6 @@ class LocalStorage extends GetxService {
     return _appBox.containsKey('restaurants_data');
   }
 
-  // ========== RESTAURANT CACHE ==========
   Future<void> cacheRestaurants(String jsonData) async {
     await saveRestaurantsData(jsonData);
     await _appBox.put(
@@ -157,7 +150,6 @@ class LocalStorage extends GetxService {
     return null;
   }
 
-  // ========== ORDER CACHE ==========
   Future<void> cacheOrders(List<Map<String, dynamic>> orders) async {
     await saveOrders(orders);
     await _appBox.put('orders_last_updated', DateTime.now().toIso8601String());
@@ -167,7 +159,6 @@ class LocalStorage extends GetxService {
     return getOrders();
   }
 
-  // ========== CART CACHE ==========
   Future<void> cacheCart(List<Map<String, dynamic>> cartItems) async {
     await saveCart(cartItems);
     await _cartBox.put('cart_last_updated', DateTime.now().toIso8601String());
@@ -185,7 +176,6 @@ class LocalStorage extends GetxService {
         );
   }
 
-  // Clear all data (for testing)
   Future<void> clearAllData() async {
     await _appBox.clear();
     await _cartBox.clear();

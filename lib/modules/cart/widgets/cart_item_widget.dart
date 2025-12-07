@@ -25,11 +25,9 @@ class CartItemWidget extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Item header
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Food icon
                 Container(
                   width: 50,
                   height: 50,
@@ -41,7 +39,6 @@ class CartItemWidget extends StatelessWidget {
                 ),
                 const SizedBox(width: 12),
 
-                // Item details
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -73,7 +70,6 @@ class CartItemWidget extends StatelessWidget {
                   ),
                 ),
 
-                // Remove button
                 IconButton(
                   icon: const Icon(Icons.close, size: 20),
                   onPressed: onRemove,
@@ -85,11 +81,9 @@ class CartItemWidget extends StatelessWidget {
 
             const SizedBox(height: 12),
 
-            // Quantity controls
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                // Quantity selector
                 Container(
                   decoration: BoxDecoration(
                     border: Border.all(color: Colors.grey.shade300),
@@ -121,7 +115,6 @@ class CartItemWidget extends StatelessWidget {
                   ),
                 ),
 
-                // Item total
                 Text(
                   '₹${cartItem.totalPrice.toStringAsFixed(2)}',
                   style: const TextStyle(
